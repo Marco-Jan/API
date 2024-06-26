@@ -10,12 +10,18 @@ use Ml\Api\ORM\UserModel;
 use PH7\PhpHttpResponseHeader\Http;
 use PH7\JustHttp\StatusCode;
 
+
 class User
 {
-    public function __construct()
+    public function login(mixed $data)
     {
-    }
+        $validate = new CustomValidation($data);
+        if($validate->validate_login()){
+            return ['hello'];
+        }
 
+        throw new ValidationException('invalid login credentials');
+    }
     public function create(mixed $data): array|object
     {
         $validate = new CustomValidation($data);
@@ -30,6 +36,11 @@ class User
                 ->set_email($data->email)
                 ->set_phone($data->phone)
                 ->set_created_at(date('Y-m-d H:i:s'));
+
+                //TODO: Set Password
+                if(UserModel::email_exists($user_entity->get_email())){
+                    throw new EmailExistsException(sprintf('Email already exists', $user_entity->get_email()));
+                };
 
             $valid = $user_uuid = UserModel::create($user_entity);
             if (!$valid) {
@@ -82,7 +93,7 @@ class User
             }
             return $user;
         }
-        
+
         throw new ValidationException('Validation failed, wrong input data');
     }
 
@@ -94,6 +105,4 @@ class User
         }
         throw new ValidationException('Validation failed, uuid no valid');
     }
-
-    
 }

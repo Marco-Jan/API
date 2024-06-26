@@ -2,6 +2,7 @@
 
 namespace Ml\Routes;
 
+use Cm\Api\Exception\EmailExistsException;
 use Cm\Api\Routes\Exception\NotAllowedException;
 use Ml\Api\Validation\Exception\ValidationException;
 use PH7\JustHttp\StatusCode;
@@ -30,4 +31,11 @@ try {
             'code' => $e->getMessage()
         ]
     ]);
-}
+
+} catch (EmailExistsException $e) {
+    response(data: [
+        'errors' => [
+            'message' => $e-getMessage()
+        ]
+    ])
+} 

@@ -56,7 +56,7 @@ final class UserModel
         return false;
     }
 
-    public static function getAll(): array
+    public static function getAll(): ?array
     {
         $user_beans = R::findAll(self::TABLE_NAME);
         $user_exists = $user_beans && count($user_beans);
@@ -98,5 +98,11 @@ final class UserModel
         $user = R::findOne(self::TABLE_NAME, 'email : :email', ['email' => $email]);
 
         return (new UserEntity())->unSerialize($user->export());
+    }
+
+    public static function email_exists(string $email): bool{
+        $user_bean = R::findOne(self::TABLE_NAME, 'email = :email', ['email' => $email]);
+
+        return $user_bean !==null;
     }
 }
